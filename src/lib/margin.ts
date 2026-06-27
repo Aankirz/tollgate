@@ -28,9 +28,11 @@ export async function getMarginRows(): Promise<MarginRow[]> {
     SELECT
       u.id AS user_id,
       u.email AS email,
-      COALESCE(SUM(l.revenue_usd), 0) AS revenue_usd,
+      -- Revenue is RECOGNIZED on usage, not on top-up (a top-up is deferred
+      -- revenue / a liability). So only debit rows contribute revenue.
+      COALESCE(SUM(l.revenue_usd) FILTER (WHERE l.type = 'debit'), 0) AS revenue_usd,
       COALESCE(SUM(l.real_cost_usd), 0) AS cost_usd,
-      COALESCE(SUM(l.revenue_usd) - SUM(l.real_cost_usd), 0) AS margin_usd,
+      COALESCE(SUM(l.revenue_usd) FILTER (WHERE l.type = 'debit') - SUM(l.real_cost_usd), 0) AS margin_usd,
       COUNT(*) FILTER (WHERE l.type = 'debit') AS generations
     FROM users u
     LEFT JOIN ledger l ON l.user_id = u.id
