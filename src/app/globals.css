@@ -1,26 +1,41 @@
 @import "tailwindcss";
 
+/* Tollgate design tokens — "developer fintech": warm paper, ink, one electric accent.
+   Light-first (not auto-dark). Numbers are monospace. Use these everywhere. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: oklch(98.5% 0.004 90);   /* warm paper */
+  --surface: oklch(100% 0 0);
+  --foreground: oklch(20% 0.01 270);     /* near-black ink */
+  --muted: oklch(55% 0.01 270);
+  --border: oklch(90% 0.005 270);
+  --accent: oklch(55% 0.24 280);         /* electric indigo */
+  --accent-foreground: oklch(99% 0 0);
+  --positive: oklch(58% 0.16 150);       /* margin green */
+  --negative: oklch(58% 0.20 25);        /* cost red */
+  --radius: 0.75rem;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-positive: var(--positive);
+  --color-negative: var(--negative);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --radius-card: var(--radius);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
+
+/* Tabular numerals for all money/credit figures. */
+.tnum { font-variant-numeric: tabular-nums; font-family: var(--font-mono), ui-monospace, monospace; }
