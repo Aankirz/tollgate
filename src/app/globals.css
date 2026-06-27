@@ -1,41 +1,97 @@
 @import "tailwindcss";
 
-/* Tollgate design tokens — "developer fintech": warm paper, ink, one electric accent.
-   Light-first (not auto-dark). Numbers are monospace. Use these everywhere. */
+/* Hallmark · macrostructure: Workbench · tone: technical/confident · anchor hue: electric-blue
+ * theme: studied-DNA "Blueprint" (source: supermemory.ai) · accent blue + amber pop
+ * Tollgate design system. Light cool paper · grain panels · dot-grid · mono eyebrows.
+ */
 :root {
-  --background: oklch(98.5% 0.004 90);   /* warm paper */
-  --surface: oklch(100% 0 0);
-  --foreground: oklch(20% 0.01 270);     /* near-black ink */
-  --muted: oklch(55% 0.01 270);
-  --border: oklch(90% 0.005 270);
-  --accent: oklch(55% 0.24 280);         /* electric indigo */
-  --accent-foreground: oklch(99% 0 0);
-  --positive: oklch(58% 0.16 150);       /* margin green */
-  --negative: oklch(58% 0.20 25);        /* cost red */
-  --radius: 0.75rem;
+  --color-paper: oklch(98% 0.008 250);     /* cool blue-white */
+  --color-paper-2: oklch(100% 0 0);        /* card surface */
+  --color-paper-3: oklch(96% 0.013 252);   /* subtle fill */
+  --color-ink: oklch(22% 0.03 262);        /* near-black navy */
+  --color-muted: oklch(52% 0.02 262);
+  --color-border: oklch(90% 0.013 255);
+
+  --color-accent: oklch(55% 0.20 255);      /* electric blue */
+  --color-accent-strong: oklch(47% 0.22 259);
+  --color-accent-foreground: oklch(99% 0 0);
+  --color-warm: oklch(76% 0.16 68);         /* amber pop */
+  --color-warm-ink: oklch(45% 0.13 62);
+
+  --color-positive: oklch(58% 0.16 150);    /* margin green */
+  --color-negative: oklch(58% 0.20 25);     /* cost red */
+
+  /* Deep blue panel (isometric-illustration backdrop) */
+  --color-panel: oklch(48% 0.18 259);
+  --color-panel-deep: oklch(32% 0.13 263);
+  --color-panel-foreground: oklch(97% 0.02 255);
+
+  --font-display: var(--font-geist-sans);
+  --font-body: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --radius: 0.5rem;
+  --radius-lg: 1rem;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 150ms;
+  --dur-normal: 320ms;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-surface: var(--surface);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
-  --color-border: var(--border);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-positive: var(--positive);
-  --color-negative: var(--negative);
+  --color-background: var(--color-paper);
+  --color-surface: var(--color-paper-2);
+  --color-paper-3: var(--color-paper-3);
+  --color-foreground: var(--color-ink);
+  --color-muted: var(--color-muted);
+  --color-border: var(--color-border);
+  --color-accent: var(--color-accent);
+  --color-accent-strong: var(--color-accent-strong);
+  --color-accent-foreground: var(--color-accent-foreground);
+  --color-warm: var(--color-warm);
+  --color-warm-ink: var(--color-warm-ink);
+  --color-positive: var(--color-positive);
+  --color-negative: var(--color-negative);
+  --color-panel: var(--color-panel);
+  --color-panel-deep: var(--color-panel-deep);
+  --color-panel-foreground: var(--color-panel-foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --radius-card: var(--radius);
+  --radius-card: var(--radius-lg);
 }
 
+html, body { overflow-x: clip; }
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Tabular numerals for all money/credit figures. */
+/* Tabular monospace numerals for all money/credit figures. */
 .tnum { font-variant-numeric: tabular-nums; font-family: var(--font-mono), ui-monospace, monospace; }
+
+/* Mono eyebrow label (Blueprint DNA). */
+.eyebrow {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* Dot-grid texture — drifts slowly; halted under reduced-motion. */
+.dotgrid {
+  background-image: radial-gradient(var(--color-accent) 1px, transparent 1.4px);
+  background-size: 22px 22px;
+  opacity: 0.10;
+  animation: dot-drift 24s linear infinite;
+}
+@keyframes dot-drift { to { background-position: 22px 22px; } }
+
+/* Flowing dot along the hero meter path. */
+@keyframes flow-dash { to { stroke-dashoffset: -160; } }
+@keyframes pulse-soft { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .dotgrid { animation: none; }
+  * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; }
+}
