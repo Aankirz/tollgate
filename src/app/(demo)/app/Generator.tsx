@@ -22,13 +22,15 @@ export default function Generator() {
   }
 
   return (
-    <section className="rounded-[var(--radius-card)] border border-border bg-surface p-6">
+    <section>
       <header className="flex items-baseline justify-between">
-        <h2 className="text-lg font-semibold tracking-tight">Generate</h2>
-        <span className="text-xs text-muted">Metered by Tollgate</span>
+        <div>
+          <span className="eyebrow">Metered by Tollgate</span>
+          <h2 className="display mt-3 text-3xl">Generate.</h2>
+        </div>
       </header>
 
-      <form onSubmit={handleSubmit} className="mt-4">
+      <form onSubmit={handleSubmit} className="mt-5">
         <label htmlFor="prompt" className="sr-only">
           Prompt
         </label>
@@ -39,17 +41,22 @@ export default function Generator() {
           rows={4}
           placeholder="Ask the model anything…"
           disabled={isPending}
-          className="w-full resize-y rounded-[var(--radius-card)] border border-border bg-background px-4 py-3 text-sm leading-relaxed text-foreground placeholder:text-muted transition-colors focus:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-60"
+          className="w-full resize-y border border-border bg-surface px-4 py-3 text-sm leading-relaxed text-foreground placeholder:text-muted transition-colors focus:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-60"
         />
 
-        <div className="mt-3 flex items-center justify-between">
-          <p className="text-xs text-muted">Each generation debits credits at the real AI cost.</p>
+        <div className="mt-4 flex items-center justify-between gap-4">
+          <p className="max-w-xs text-xs leading-relaxed text-muted">
+            Each generation debits credits at the real AI cost.
+          </p>
           <button
             type="submit"
             disabled={!canSubmit}
-            className="rounded-[var(--radius-card)] bg-accent px-5 py-2 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-50"
+            className="group inline-flex items-center gap-2 bg-accent px-5 py-2.5 text-sm text-accent-foreground transition-colors hover:bg-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isPending ? "Generating…" : "Generate"}
+            <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
+              →
+            </span>
           </button>
         </div>
       </form>
@@ -63,19 +70,27 @@ function Output({ result }: { result: GenerateActionResult }) {
   if (result.ok) {
     const { text, costUsd, creditsCharged, newBalance } = result.result;
     return (
-      <div className="mt-5 rounded-[var(--radius-card)] border border-border bg-background p-4">
-        <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">{text}</p>
-        <p className="mt-4 border-t border-border pt-3 text-xs text-muted">
-          charged <span className="tnum font-medium text-foreground">{creditsCharged}</span>{" "}
-          credits ·{" "}
+      <div className="mt-6 border border-border bg-surface">
+        <div className="border-b border-dashed border-border px-5 py-4">
+          <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">{text}</p>
+        </div>
+        <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1 px-5 py-3 font-mono text-xs text-muted">
+          <span>
+            charged{" "}
+            <span className="tnum font-medium text-foreground">{creditsCharged}</span> credits
+          </span>
+          <span aria-hidden className="text-border">·</span>
           <span title="real AI cost">
             real AI cost{" "}
             <span className="tnum font-medium text-negative">
               ${costUsd.toFixed(COST_USD_FRACTION_DIGITS)}
             </span>
-          </span>{" "}
-          · new balance{" "}
-          <span className="tnum font-medium text-foreground">{newBalance}</span>
+          </span>
+          <span aria-hidden className="text-border">·</span>
+          <span>
+            new balance{" "}
+            <span className="tnum font-medium text-positive">{newBalance}</span>
+          </span>
         </p>
       </div>
     );
@@ -83,17 +98,21 @@ function Output({ result }: { result: GenerateActionResult }) {
 
   if (result.error === "insufficient") {
     return (
-      <div className="mt-5 rounded-[var(--radius-card)] border border-negative/30 bg-negative/5 p-4">
-        <p className="text-sm font-medium text-foreground">You&rsquo;re out of credits.</p>
-        <p className="mt-1 text-sm text-muted">
-          Balance: <span className="tnum font-medium text-negative">{result.balance}</span>.
-          Top up to keep generating.
+      <div className="mt-6 border border-negative/40 bg-surface p-5">
+        <span className="eyebrow" style={{ color: "var(--color-negative)" }}>
+          Out of credits
+        </span>
+        <p className="mt-2 font-mono text-sm text-muted">
+          Balance:{" "}
+          <span className="tnum font-medium text-negative">{result.balance}</span>. Top up to
+          keep generating.
         </p>
         <a
           href="#buy-credits"
-          className="mt-3 inline-block rounded-[var(--radius-card)] bg-foreground px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-foreground/85"
+          className="group mt-4 inline-flex items-center gap-2 border border-foreground bg-foreground px-4 py-2 text-sm text-background transition-colors hover:border-accent hover:bg-accent"
         >
           Buy credits
+          <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
         </a>
       </div>
     );
@@ -102,8 +121,8 @@ function Output({ result }: { result: GenerateActionResult }) {
   const message =
     result.error === "empty" ? "Enter a prompt first." : "Something went wrong. Try again.";
   return (
-    <div className="mt-5 rounded-[var(--radius-card)] border border-border bg-background p-4">
-      <p className="text-sm text-muted">{message}</p>
+    <div className="mt-6 border border-border bg-surface p-5">
+      <p className="font-mono text-sm text-muted">{message}</p>
     </div>
   );
 }

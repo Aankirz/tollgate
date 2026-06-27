@@ -17,3 +17,12 @@
 - Added Instrument Serif via next/font; new tokens (cream palette, motion keyframes, .display/.eyebrow/.perf/.reveal).
 - New components: Receipt (printed usage-receipt motif), Reveal (scroll-reveal, reduced-motion safe).
 - Landing rebuilt as editorial 'user story': serif hero + receipt, ticker, 4-act scrollytelling (a day in the life of an AI app), margin teaser with count-up, inverted ink CTA.
+
+## 2026-06-28 — Editorial restyle of sign-in page
+- Restyled src/app/(auth)/signin/page.tsx to the Cream Receipt editorial system (serif .display heading, mono eyebrows, hairline borders, dashed receipt tear line, accent focus ring, ink/accent submit button). Visual layer only; preserved signInAction server action, hidden ref field, and referral hint.
+
+## 2026-06-28 — Fix ReferralLink corners for editorial consistency
+- Removed rounded corners from referral link input and copy button to match sharp-cornered Cream Receipt aesthetic used everywhere else. Copy button hover now uses accent color, consistent with other CTAs.
+
+## 2026-06-28 — Restyle builder dashboard to "Cream Receipt" editorial
+- Rewrote src/app/(dashboard)/dashboard/page.tsx visual layer only: Wordmark + .eyebrow header, total margin as huge serif .display CountUp in green with revenue/brick AI cost summary rows, hairline-ruled per-user ledger table with .tnum figures + totals footer, editorial empty state linking to /app. getMarginRows/getTotals data and logic unchanged.

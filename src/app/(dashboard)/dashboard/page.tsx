@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { Wordmark } from "@/components/visuals/Wordmark";
+import { CountUp } from "@/components/visuals/CountUp";
 import { getMarginRows, getTotals } from "@/lib/margin";
 
 export const dynamic = "force-dynamic";
 
-// Money formatter: cents for normal amounts, 4 decimals for sub-cent AI costs
-// so tiny per-generation costs (e.g. $0.0123) stay legible.
+// Money formatter: cents for normal amounts, 4 decimals for sub-$0.10 AI costs
+// so tiny per-generation costs (e.g. $0.0001) stay legible.
 function usd(value: number): string {
   const safe = value === 0 ? 0 : value; // normalize -0
   const abs = Math.abs(safe);
@@ -17,6 +19,12 @@ function usd(value: number): string {
   });
 }
 
+// Decimal places the headline CountUp should animate to — matches usd().
+function moneyDecimals(value: number): number {
+  const abs = Math.abs(value);
+  return abs > 0 && abs < 0.1 ? 4 : 2;
+}
+
 function signedClass(value: number): string {
   return value >= 0 ? "text-positive" : "text-negative";
 }
@@ -26,14 +34,13 @@ export default async function DashboardPage() {
   const hasData = rows.length > 0;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-6xl px-6 py-12 sm:px-10 sm:py-16">
+    <div className="min-h-dvh bg-background text-foreground">
+      <div className="mx-auto w-full max-w-5xl px-6 py-12 sm:py-16">
         <Header />
-
         {hasData ? (
           <>
-            <HeroStats totals={totals} />
-            <UserTable rows={rows} />
+            <Statement totals={totals} />
+            <Ledger rows={rows} totals={totals} />
           </>
         ) : (
           <EmptyState />
@@ -45,147 +52,209 @@ export default async function DashboardPage() {
 
 function Header() {
   return (
-    <header className="mb-12 flex items-baseline justify-between border-b border-border pb-6">
+    <header className="flex items-baseline justify-between border-b border-border pb-5">
       <div className="flex items-baseline gap-3">
-        <span className="text-xl font-semibold tracking-tight">Tollgate</span>
-        <span className="h-4 w-px bg-border" aria-hidden />
-        <span className="text-sm font-medium text-muted">Builder dashboard</span>
+        <Wordmark />
+        <span className="h-3.5 w-px bg-border" aria-hidden />
+        <span className="eyebrow">Builder dashboard</span>
       </div>
-      <span className="hidden text-xs uppercase tracking-widest text-muted sm:inline">
-        Revenue · Cost · Margin
-      </span>
+      <span className="eyebrow hidden sm:inline">Margin statement</span>
     </header>
   );
 }
 
-interface HeroStatsProps {
+interface StatementProps {
   totals: Awaited<ReturnType<typeof getTotals>>;
 }
 
-function HeroStats({ totals }: HeroStatsProps) {
+// The headline: total margin printed as a large serif figure, with revenue and
+// brick-red AI cost ruled alongside it — like the summary line of a statement.
+function Statement({ totals }: StatementProps) {
   return (
     <section
       aria-label="Headline metrics"
-      className="mb-14 grid grid-cols-1 gap-px overflow-hidden rounded-card border border-border bg-border sm:grid-cols-2 lg:grid-cols-4"
+      className="grid gap-x-12 gap-y-10 py-14 md:grid-cols-[1.3fr_0.7fr] md:items-end"
     >
-      {/* Margin — the headline. Spans wide, scaled up, electric-on-paper. */}
-      <div className="flex flex-col justify-between bg-surface p-7 sm:col-span-2 lg:col-span-2 lg:row-span-1">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-widest text-muted">
-            Total margin
-          </span>
-          <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
-            {totals.marginPct.toFixed(1)}% net
-          </span>
-        </div>
-        <div
-          className={`tnum mt-6 text-6xl font-semibold leading-none tracking-tight sm:text-7xl ${signedClass(
+      <div>
+        <span className="eyebrow">Net margin on AI usage</span>
+        <CountUp
+          to={totals.marginUsd}
+          prefix="$"
+          decimals={moneyDecimals(totals.marginUsd)}
+          className={`display mt-4 block text-[clamp(3.5rem,2rem+8vw,7rem)] ${signedClass(
             totals.marginUsd,
           )}`}
-        >
-          {usd(totals.marginUsd)}
-        </div>
-        <p className="mt-4 text-sm text-muted">
-          Across {totals.users} {totals.users === 1 ? "user" : "users"} and{" "}
-          {totals.generations.toLocaleString("en-US")} generations.
+        />
+        <p className="mt-5 max-w-md leading-relaxed text-muted">
+          Revenue recognized on usage, minus the real AI cost, across{" "}
+          <span className="text-foreground">
+            {totals.users} {totals.users === 1 ? "user" : "users"}
+          </span>{" "}
+          and{" "}
+          <span className="text-foreground tnum">
+            {totals.generations.toLocaleString("en-US")}
+          </span>{" "}
+          generations.
         </p>
       </div>
 
-      <StatCard label="Revenue" value={usd(totals.revenueUsd)} tone="neutral" />
-      <StatCard label="AI cost" value={usd(-totals.costUsd)} tone="negative" />
+      <dl className="flex flex-col">
+        <SummaryRow label="Revenue collected" value={usd(totals.revenueUsd)} />
+        <SummaryRow
+          label="Real AI cost"
+          value={usd(-totals.costUsd)}
+          tone="negative"
+        />
+        <SummaryRow
+          label="Margin"
+          value={`${totals.marginPct.toFixed(1)}%`}
+          tone={totals.marginUsd >= 0 ? "positive" : "negative"}
+          strong
+        />
+      </dl>
     </section>
   );
 }
 
-interface StatCardProps {
+interface SummaryRowProps {
   label: string;
   value: string;
-  tone: "neutral" | "negative";
+  tone?: "neutral" | "positive" | "negative";
+  strong?: boolean;
 }
 
-function StatCard({ label, value, tone }: StatCardProps) {
-  const valueClass = tone === "negative" ? "text-negative" : "text-foreground";
+function SummaryRow({ label, value, tone = "neutral", strong }: SummaryRowProps) {
+  const valueClass =
+    tone === "positive"
+      ? "text-positive"
+      : tone === "negative"
+        ? "text-negative"
+        : "text-foreground";
   return (
-    <div className="flex flex-col justify-between bg-surface p-7">
-      <span className="text-xs font-semibold uppercase tracking-widest text-muted">
-        {label}
-      </span>
-      <div className={`tnum mt-6 text-3xl font-semibold tracking-tight ${valueClass}`}>
+    <div
+      className={`flex items-baseline justify-between gap-6 border-t border-border py-3.5 ${
+        strong ? "border-foreground" : ""
+      }`}
+    >
+      <dt className="eyebrow">{label}</dt>
+      <dd
+        className={`tnum ${strong ? "text-xl font-semibold" : "text-lg"} ${valueClass}`}
+      >
         {value}
-      </div>
+      </dd>
     </div>
   );
 }
 
-interface UserTableProps {
+interface LedgerProps {
   rows: Awaited<ReturnType<typeof getMarginRows>>;
+  totals: Awaited<ReturnType<typeof getTotals>>;
 }
 
-function UserTable({ rows }: UserTableProps) {
+// A clean, hairline-ruled ledger — one printed line per user.
+function Ledger({ rows, totals }: LedgerProps) {
   return (
-    <section aria-label="Per-user margin">
-      <h2 className="mb-4 text-sm font-semibold uppercase tracking-widest text-muted">
-        Per-user breakdown
-      </h2>
-      <div className="overflow-hidden rounded-card border border-border bg-surface">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border text-xs uppercase tracking-wider text-muted">
-              <th className="px-6 py-4 text-left font-medium">User</th>
-              <th className="px-6 py-4 text-right font-medium">Generations</th>
-              <th className="px-6 py-4 text-right font-medium">Revenue</th>
-              <th className="px-6 py-4 text-right font-medium">AI cost</th>
-              <th className="px-6 py-4 text-right font-medium">Margin</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr
-                key={row.userId}
-                className="border-b border-border/60 transition-colors last:border-0 hover:bg-background"
-              >
-                <td className="px-6 py-4 font-medium text-foreground">{row.email}</td>
-                <td className="tnum px-6 py-4 text-right text-muted">
-                  {row.generations.toLocaleString("en-US")}
-                </td>
-                <td className="tnum px-6 py-4 text-right text-foreground">
-                  {usd(row.revenueUsd)}
-                </td>
-                <td className="tnum px-6 py-4 text-right text-negative">
-                  {usd(-row.costUsd)}
-                </td>
-                <td
-                  className={`tnum px-6 py-4 text-right font-semibold ${signedClass(
-                    row.marginUsd,
-                  )}`}
-                >
-                  {usd(row.marginUsd)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <section aria-label="Per-user margin" className="pb-12">
+      <div className="flex items-baseline justify-between border-b border-foreground pb-3">
+        <h2 className="display text-2xl">Per-user ledger</h2>
+        <span className="eyebrow">{rows.length} entries</span>
       </div>
+
+      <table className="w-full border-collapse text-sm">
+        <thead>
+          <tr className="border-b border-border">
+            <Th className="text-left">User</Th>
+            <Th className="text-right">Generations</Th>
+            <Th className="text-right">Revenue</Th>
+            <Th className="text-right">AI cost</Th>
+            <Th className="text-right">Margin</Th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr
+              key={row.userId}
+              className="border-b border-border/70 transition-colors hover:bg-paper-3/60"
+            >
+              <td className="py-4 pr-4 align-baseline text-foreground">
+                {row.email}
+              </td>
+              <td className="tnum py-4 pl-4 text-right align-baseline text-muted">
+                {row.generations.toLocaleString("en-US")}
+              </td>
+              <td className="tnum py-4 pl-4 text-right align-baseline text-foreground">
+                {usd(row.revenueUsd)}
+              </td>
+              <td className="tnum py-4 pl-4 text-right align-baseline text-negative">
+                {usd(-row.costUsd)}
+              </td>
+              <td
+                className={`tnum py-4 pl-4 text-right align-baseline font-semibold ${signedClass(
+                  row.marginUsd,
+                )}`}
+              >
+                {usd(row.marginUsd)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr className="border-t-2 border-foreground">
+            <td className="eyebrow py-4 pr-4 align-baseline">Total</td>
+            <td className="tnum py-4 pl-4 text-right align-baseline text-muted">
+              {totals.generations.toLocaleString("en-US")}
+            </td>
+            <td className="tnum py-4 pl-4 text-right align-baseline text-foreground">
+              {usd(totals.revenueUsd)}
+            </td>
+            <td className="tnum py-4 pl-4 text-right align-baseline text-negative">
+              {usd(-totals.costUsd)}
+            </td>
+            <td
+              className={`tnum py-4 pl-4 text-right align-baseline font-semibold ${signedClass(
+                totals.marginUsd,
+              )}`}
+            >
+              {usd(totals.marginUsd)}
+            </td>
+          </tr>
+        </tfoot>
+      </table>
     </section>
+  );
+}
+
+function Th({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <th className={`eyebrow py-3 font-normal ${className}`}>{children}</th>
   );
 }
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center rounded-card border border-dashed border-border bg-surface px-6 py-24 text-center">
-      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-2xl text-accent">
-        ✦
-      </div>
-      <h2 className="text-lg font-semibold tracking-tight">No usage yet</h2>
-      <p className="mt-2 max-w-sm text-sm text-muted">
-        Run a few generations in the demo app and your revenue, AI cost, and
-        margin will show up here.
+    <div className="border-t border-border py-24 text-center">
+      <span className="eyebrow">Nothing on the ledger yet</span>
+      <h2 className="display mx-auto mt-4 max-w-md text-[clamp(2rem,1.4rem+3vw,3.2rem)]">
+        No usage to <em className="text-accent">account</em> for.
+      </h2>
+      <p className="mx-auto mt-5 max-w-sm leading-relaxed text-muted">
+        Run a few generations in the demo and your revenue, real AI cost, and
+        margin per user will print here — straight off the append-only ledger.
       </p>
       <Link
         href="/app"
-        className="mt-6 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90"
+        className="group mt-9 inline-flex items-center gap-2 bg-accent px-5 py-3 text-sm text-accent-foreground transition-colors hover:bg-accent-strong"
       >
-        Open the demo app →
+        Open the demo app
+        <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
+          →
+        </span>
       </Link>
     </div>
   );

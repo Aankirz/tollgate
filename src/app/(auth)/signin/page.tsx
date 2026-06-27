@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { signInAction } from "@/app/(auth)/actions";
+import { Wordmark } from "@/components/visuals/Wordmark";
 
 type SignInPageProps = {
   searchParams: Promise<{ ref?: string }>;
@@ -8,45 +10,46 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   const { ref } = await searchParams;
 
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-background px-6 py-16">
-      <section
-        aria-labelledby="signin-heading"
-        className="w-full max-w-sm"
-      >
-        {/* Wordmark + tagline — hierarchy, not a centered template hero. */}
-        <div className="mb-10">
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-semibold tracking-tight text-foreground">
-              Tollgate
-            </span>
-            <span
-              aria-hidden="true"
-              className="h-1.5 w-1.5 rounded-full bg-accent"
-            />
-          </div>
-          <p className="mt-2 text-sm text-muted">the money layer for AI apps</p>
+    <main className="flex min-h-dvh flex-col bg-background text-foreground">
+      {/* Top hairline bar — editorial, not a centered hero. */}
+      <header className="border-b border-border">
+        <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-5">
+          <Link href="/" className="transition-opacity hover:opacity-80">
+            <Wordmark />
+          </Link>
+          <Link
+            href="/"
+            className="eyebrow transition-colors hover:text-foreground"
+          >
+            ← Back home
+          </Link>
         </div>
+      </header>
 
-        <div className="rounded-[var(--radius-card)] border border-border bg-surface p-7 shadow-sm">
+      <div className="flex flex-1 items-center justify-center px-6 py-16">
+        <section aria-labelledby="signin-heading" className="w-full max-w-md">
+          <span className="eyebrow">Wallet access · no password</span>
           <h1
             id="signin-heading"
-            className="text-lg font-medium tracking-tight text-foreground"
+            className="display mt-5 text-[clamp(2.6rem,1.6rem+4vw,3.8rem)]"
           >
-            Sign in
+            Open your <em className="text-accent">wallet.</em>
           </h1>
-          <p className="mt-1 text-sm text-muted">
-            Enter your email to open your wallet.
+          <p className="mt-5 max-w-sm leading-relaxed text-muted">
+            One email is all it takes. We open your account and credit your
+            wallet on first visit — feel the product before you ever pay.
           </p>
 
-          <form action={signInAction} className="mt-6 space-y-4">
+          {/* The "receipt" — hairline border, mono labels, dashed tear line. */}
+          <form
+            action={signInAction}
+            className="mt-10 border border-border bg-surface p-7"
+          >
             {ref ? <input type="hidden" name="ref" value={ref} /> : null}
 
-            <div className="space-y-1.5">
-              <label
-                htmlFor="email"
-                className="block text-xs font-medium uppercase tracking-wide text-muted"
-              >
-                Email
+            <div className="space-y-2">
+              <label htmlFor="email" className="eyebrow block">
+                Email address
               </label>
               <input
                 id="email"
@@ -55,31 +58,55 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
                 autoComplete="email"
                 required
                 placeholder="you@company.com"
-                className="w-full rounded-[var(--radius-card)] border border-border bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted/60 transition-colors focus-visible:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
+                className="tnum w-full border border-border bg-background px-3.5 py-3 text-sm text-foreground transition-colors placeholder:text-muted/60 focus-visible:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full rounded-[var(--radius-card)] bg-accent px-3 py-2.5 text-sm font-semibold text-accent-foreground transition-[transform,opacity] hover:opacity-95 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+              className="group mt-5 inline-flex w-full items-center justify-center gap-2 border border-foreground bg-foreground px-4 py-3 text-sm font-medium text-background transition-colors hover:border-accent hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
             >
               Continue
+              <span
+                aria-hidden
+                className="transition-transform group-hover:translate-x-0.5"
+              >
+                →
+              </span>
             </button>
+
+            {/* Dashed tear line — the receipt motif. */}
+            <div
+              aria-hidden
+              className="mt-7 border-t border-dashed border-border"
+            />
+
+            <dl className="mt-5 space-y-2.5 text-xs leading-relaxed text-muted">
+              <div className="flex items-baseline justify-between gap-4">
+                <dt className="eyebrow">Auth</dt>
+                <dd className="tnum text-right text-ink-soft">
+                  email only · demo mode
+                </dd>
+              </div>
+              <div className="flex items-baseline justify-between gap-4">
+                <dt className="eyebrow">On signup</dt>
+                <dd className="tnum text-right text-positive">
+                  + bonus credits
+                </dd>
+              </div>
+            </dl>
           </form>
 
-          {/* ponytail: demo auth — no password, no verification. */}
-          <p className="mt-5 text-xs leading-relaxed text-muted">
-            Demo sign-in: email only, no password. We&apos;ll create your account
-            and wallet on first visit.
-          </p>
-        </div>
-
-        {ref ? (
-          <p className="mt-4 text-center text-xs text-muted">
-            Joining via a referral — you both get bonus credits.
-          </p>
-        ) : null}
-      </section>
+          {ref ? (
+            <p className="mt-5 flex items-center gap-2 text-sm text-muted">
+              <span aria-hidden className="text-accent">
+                ✦
+              </span>
+              Joining via a referral — you both get bonus credits.
+            </p>
+          ) : null}
+        </section>
+      </div>
     </main>
   );
 }

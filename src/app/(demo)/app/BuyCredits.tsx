@@ -27,41 +27,41 @@ export default function BuyCredits() {
   }
 
   return (
-    <section
-      id="buy-credits"
-      className="scroll-mt-24 rounded-[var(--radius-card)] border border-border bg-surface p-6"
-    >
-      <h2 className="text-lg font-semibold tracking-tight">Buy credits</h2>
-      <p className="mt-1 text-sm text-muted">Top up your wallet. Secured by Stripe.</p>
+    <section id="buy-credits" className="scroll-mt-24">
+      <span className="eyebrow">Secured by Stripe</span>
+      <h2 className="display mt-3 text-3xl">Top up.</h2>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+      <div className="mt-6 grid gap-px border border-border bg-border sm:grid-cols-2">
         {CREDIT_PACKS.map((pack) => {
           const isPending = pendingId === pack.id;
           return (
             <div
               key={pack.id}
-              className="flex flex-col justify-between rounded-[var(--radius-card)] border border-border bg-background p-4"
+              className="flex flex-col justify-between gap-5 bg-surface p-5"
             >
               <div>
-                <p className="tnum text-2xl font-semibold tracking-tight">
+                <p className="tnum text-4xl text-foreground">
                   {pack.credits.toLocaleString()}
                 </p>
-                <p className="text-sm text-muted">credits</p>
+                <p className="eyebrow mt-1">credits</p>
               </div>
               <button
                 type="button"
                 onClick={() => buy(pack.id)}
                 disabled={pendingId !== null}
-                className="mt-4 w-full rounded-[var(--radius-card)] bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
+                className="group inline-flex w-full items-center justify-between gap-2 border border-foreground px-4 py-2.5 text-sm text-foreground transition-colors hover:border-accent hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isPending ? "Redirecting…" : `Buy · $${pack.priceUsd}`}
+                <span>{isPending ? "Redirecting…" : "Buy"}</span>
+                <span className="tnum">${pack.priceUsd}</span>
               </button>
             </div>
           );
         })}
       </div>
 
-      {error && <p className="mt-3 text-sm text-negative">{error}</p>}
+      {error && (
+        <p className="mt-3 font-mono text-sm text-negative">{error}</p>
+      )}
     </section>
   );
 }
