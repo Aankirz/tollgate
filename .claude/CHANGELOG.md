@@ -11,3 +11,9 @@
 - Typecheck clean; public repo pushed: https://github.com/Aankirz/tollgate
 - QA via Chrome component-by-component: landing, sign-in, signup bonus (+50), generate (−10 + real AI cost $0.000126), top-up (+500), dashboard, referral (+100 both sides).
 - **Bug found & fixed in QA:** margin dashboard double-counted revenue (cash top-up + imputed per-generation → $5.10). Revenue now recognized on usage only (top-up = deferred); corrected to $0.10. Verified invariant: cached balance == SUM(ledger.credits_delta), 0 violations; referral recorded exactly once.
+
+## 2026-06-28 — Full editorial revamp (Cream Receipt)
+- New direction (user-picked): warm cream paper, ink + ONE warm-red accent, Instrument Serif display + Geist Mono, deliberately not the blue AI-tool reflex.
+- Added Instrument Serif via next/font; new tokens (cream palette, motion keyframes, .display/.eyebrow/.perf/.reveal).
+- New components: Receipt (printed usage-receipt motif), Reveal (scroll-reveal, reduced-motion safe).
+- Landing rebuilt as editorial 'user story': serif hero + receipt, ticker, 4-act scrollytelling (a day in the life of an AI app), margin teaser with count-up, inverted ink CTA.

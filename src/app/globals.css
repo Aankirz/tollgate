@@ -1,41 +1,41 @@
 @import "tailwindcss";
 
-/* Hallmark · macrostructure: Workbench · tone: technical/confident · anchor hue: electric-blue
- * theme: studied-DNA "Blueprint" (source: supermemory.ai) · accent blue + amber pop
- * Tollgate design system. Light cool paper · grain panels · dot-grid · mono eyebrows.
+/* Hallmark/Impeccable · register: brand · macrostructure: Editorial Receipt
+ * tone: editorial / crafted-financial-document · color strategy: Restrained
+ * theme: light "Cream Receipt" — warm cream paper, ink, ONE warm-red accent, serif display.
+ * Deliberately NOT the blue AI-tool category reflex.
  */
 :root {
-  --color-paper: oklch(98% 0.008 250);     /* cool blue-white */
-  --color-paper-2: oklch(100% 0 0);        /* card surface */
-  --color-paper-3: oklch(96% 0.013 252);   /* subtle fill */
-  --color-ink: oklch(22% 0.03 262);        /* near-black navy */
-  --color-muted: oklch(52% 0.02 262);
-  --color-border: oklch(90% 0.013 255);
+  --color-paper: oklch(96.5% 0.018 78);     /* warm cream */
+  --color-paper-2: oklch(98.8% 0.010 80);   /* card surface */
+  --color-paper-3: oklch(93.2% 0.022 78);   /* subtle warm fill */
+  --color-ink: oklch(23% 0.018 55);         /* warm near-black */
+  --color-ink-soft: oklch(34% 0.018 55);
+  --color-muted: oklch(48% 0.018 58);
+  --color-border: oklch(85% 0.022 78);      /* warm hairline */
 
-  --color-accent: oklch(55% 0.20 255);      /* electric blue */
-  --color-accent-strong: oklch(47% 0.22 259);
-  --color-accent-foreground: oklch(99% 0 0);
-  --color-warm: oklch(76% 0.16 68);         /* amber pop */
-  --color-warm-ink: oklch(45% 0.13 62);
+  --color-accent: oklch(54% 0.19 28);       /* warm red */
+  --color-accent-strong: oklch(47% 0.20 28);
+  --color-accent-foreground: oklch(98% 0.01 80);
+  --color-gold: oklch(72% 0.11 75);         /* sparing warm gold */
 
-  --color-positive: oklch(58% 0.16 150);    /* margin green */
-  --color-negative: oklch(58% 0.20 25);     /* cost red */
+  --color-positive: oklch(48% 0.11 150);    /* deep margin green */
+  --color-negative: oklch(52% 0.17 32);     /* brick (cost) */
 
-  /* Deep blue panel (isometric-illustration backdrop) */
-  --color-panel: oklch(48% 0.18 259);
-  --color-panel-deep: oklch(32% 0.13 263);
-  --color-panel-foreground: oklch(97% 0.02 255);
+  /* Dark ink panel for the occasional inverted band. */
+  --color-panel: oklch(24% 0.02 55);
+  --color-panel-foreground: oklch(95% 0.02 80);
 
-  --font-display: var(--font-geist-sans);
+  --font-display: var(--font-serif);        /* Instrument Serif */
   --font-body: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
-  --radius: 0.5rem;
-  --radius-lg: 1rem;
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --dur-fast: 150ms;
-  --dur-normal: 320ms;
+  --radius: 0.25rem;
+  --radius-lg: 0.5rem;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);       /* ease-out-expo */
+  --ease-in-out: cubic-bezier(0.83, 0, 0.17, 1);
+  --dur-fast: 160ms;
+  --dur-normal: 420ms;
 }
 
 @theme inline {
@@ -43,20 +43,20 @@
   --color-surface: var(--color-paper-2);
   --color-paper-3: var(--color-paper-3);
   --color-foreground: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
   --color-muted: var(--color-muted);
   --color-border: var(--color-border);
   --color-accent: var(--color-accent);
   --color-accent-strong: var(--color-accent-strong);
   --color-accent-foreground: var(--color-accent-foreground);
-  --color-warm: var(--color-warm);
-  --color-warm-ink: var(--color-warm-ink);
+  --color-gold: var(--color-gold);
   --color-positive: var(--color-positive);
   --color-negative: var(--color-negative);
   --color-panel: var(--color-panel);
-  --color-panel-deep: var(--color-panel-deep);
   --color-panel-foreground: var(--color-panel-foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-serif);
   --radius-card: var(--radius-lg);
 }
 
@@ -68,30 +68,46 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Tabular monospace numerals for all money/credit figures. */
+/* Editorial serif display. Roman by default; italic only as an emphasis span. */
+.display {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 0.98;
+}
+.display em { font-style: italic; }
+
+/* Monospace tabular numerals for all money/credit figures + receipt copy. */
 .tnum { font-variant-numeric: tabular-nums; font-family: var(--font-mono), ui-monospace, monospace; }
 
-/* Mono eyebrow label (Blueprint DNA). */
+/* Mono uppercase eyebrow / receipt label. */
 .eyebrow {
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+  font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
   color: var(--color-muted);
 }
 
-/* Dot-grid texture — drifts slowly; halted under reduced-motion. */
-.dotgrid {
-  background-image: radial-gradient(var(--color-accent) 1px, transparent 1.4px);
-  background-size: 22px 22px;
-  opacity: 0.10;
-  animation: dot-drift 24s linear infinite;
+/* Perforated edge (receipt tear). */
+.perf {
+  --d: 7px;
+  height: var(--d);
+  background:
+    radial-gradient(circle at center, var(--color-paper) 0 calc(var(--d) / 2), transparent calc(var(--d) / 2 + 0.5px))
+    0 0 / calc(var(--d) * 2) var(--d) repeat-x;
 }
-@keyframes dot-drift { to { background-position: 22px 22px; } }
 
-/* Flowing dot along the hero meter path. */
-@keyframes flow-dash { to { stroke-dashoffset: -160; } }
-@keyframes pulse-soft { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+/* Scroll-reveal — staggered, ease-out-expo. */
+.reveal { opacity: 0; transform: translateY(18px); }
+.reveal.in {
+  opacity: 1; transform: none;
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+}
+
+/* Receipt "prints" downward on reveal. */
+@keyframes print-in { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes ticker { to { transform: translateX(-50%); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .dotgrid { animation: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
   * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; }
 }
