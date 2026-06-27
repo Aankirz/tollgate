@@ -28,12 +28,12 @@ export default function ReferralLink({ link }: { link: string }) {
         readOnly
         value={link}
         onFocus={(e) => e.currentTarget.select()}
-        className="tnum w-full flex-1 truncate rounded-[var(--radius-card)] border border-border bg-background px-3 py-2 text-sm text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        className="tnum w-full flex-1 truncate border border-border bg-background px-3 py-2 text-sm text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
       />
       <button
         type="button"
         onClick={copy}
-        className="shrink-0 rounded-[var(--radius-card)] border border-border bg-foreground px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-foreground/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+        className="shrink-0 border border-foreground bg-foreground px-4 py-2 text-sm font-semibold text-background transition-colors hover:border-accent hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
       >
         {copied ? "Copied ✓" : "Copy"}
       </button>
